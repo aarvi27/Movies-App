@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #030303;
+            font-family: 'Times New Roman', Times, serif;
+            margin: 0;
+        }
+
+        header {
+            background-color: #363636;
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem;
+            align-items: center;
+        }
+
+        h1 {
+            color: whitesmoke;
+            margin-left: 0;
+        }
+
+        .search {
+            background-color: #2c2f3b;
+            border: 2px solid #7378c5;
+            border-radius: 30px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
+            width: 100%;
+            max-width: 600px;
+            transition: all 0.3s ease;
+            margin-right: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .search::placeholder {
+            color: #b3b3d9;
+            /* Lighter placeholder color for better contrast */
+        }
+
+        .search:focus {
+            background-color: #33394a;
+            /* Darker background when focused */
+            border-color: #ff7f50;
+            /* Highlight border on focus */
+            outline: none;
+            /* Remove default outline */
+            box-shadow: 0 0 8px rgba(255, 127, 80, 0.8);
+            /* Add glow effect on focus */
+        }
+
+        div {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .moviestyle {
+            background-color: #373b69;
+            border-radius: 3px;
+            box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            position: relative;
+            margin: 1rem;
+            width: 90%;
+            max-width: 450px;
+            transition: transform 0.3s ease;
+        }
+
+        .moviestyle img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .movie-info {
+            color: #eee;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            letter-spacing: 0.5px;
+        }
+
+        .movie-info h3 {
+            margin: 0px;
+        }
+
+        .movie-info span {
+            background-color: #542525;
+            border-radius: 20px;
+            font-weight: bold;
+            padding: 0.25rem 0.8rem;
+        }
+
+        .movie-info span.green {
+            color: green;
+        }
+
+        .movie-info span.orange {
+            color: orange;
+        }
+
+        .movie-info span.red {
+            color: red;
+        }
+
+        .overview {
+            background-color: white;
+            padding: 2rem;
+            position: absolute;
+            max-height: 100%;
+            overflow: auto;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            transform: translateY(101%);
+            transition: transform 0.5s ease-in;
+        }
+
+        .overview h3 {
+            margin-top: 0px;
+        }
+
+        .moviestyle:hover .overview {
+            transform: translateY(0);
+        }
+
+        /* Media Queries for responsiveness */
+
+        /* For tablets (Portrait mode) */
+        @media screen and (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            h1 {
+                margin-left: 0;
+                font-size: 1.5rem;
+            }
+
+            .search {
+                width: 80%;
+                /* Adjust width for tablet */
+                margin: 0 auto 1rem auto;
+                /* Center align and add margin at the bottom */
+            }
+
+            .moviestyle {
+                width: 95%;
+                margin: 1rem auto;
+            }
+
+            .moviestyle img {
+                height: 250px;
+            }
+        }
+
+        /* For mobile devices */
+        @media screen and (max-width: 480px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 0.5rem;
+            }
+
+            h1 {
+                font-size: 1.2rem;
+                text-align: center;
+            }
+
+            .search {
+                width: 90%;
+                /* Wider on mobile */
+                margin-top: 1rem;
+                /* Space at the top on mobile */
+                font-size: 1.1rem;
+                /* Slightly larger font for easier readability */
+            }
+
+            .moviestyle {
+                width: 100%;
+                margin: 1rem 0;
+            }
+
+            .moviestyle img {
+                height: 200px;
+            }
+
+            .movie-info h3 {
+                font-size: 1rem;
+            }
+
+            .movie-info span {
+                font-size: 0.8rem;
+            }
+
+            .overview {
+                padding: 1rem;
+            }
+
+            .overview h3 {
+                font-size: 1rem;
+            }
+        }
+
+        /* For large screens */
+        @media screen and (min-width: 1200px) {
+            header {
+                padding: 2rem;
+            }
+
+            .moviestyle {
+                width: 30%;
+                margin: 1rem;
+            }
+
+            .moviestyle img {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Movies Website</h1>
+        <div id="form">
+            <input type="text" id="search" placeholder="search" class="search">
+        </div>
+    </header>
+    <div id="content"></div>
+    <script>
+        const APIURL = 'https://api.themoviedb.org/3/discover/movie?api_key=034adecffe12c6a4ec5961bdc5a08964';
+        const IMGPATH = 'https://image.tmdb.org/t/p/w1280';
+        const SEARCHAPI = 'https://api.themoviedb.org/3/search/movie?&api_key=034adecffe12c6a4ec5961bdc5a08964&query=';
+
+        const form = document.getElementById("form");
+        const search = document.getElementById("search");
+        const content = document.getElementById("content");
+
+        async function getmovie(url) {
+            let res = await fetch(url);
+            let data = await res.json();
+            showmovie(data.results);
+        }
+
+        function showmovie(movie) {
+            content.innerHTML = "";
+            movie.forEach((value) => {
+                const { poster_path, title, overview, vote_average } = value;
+                const moviess = document.createElement("div");
+                moviess.classList.add("moviestyle");
+                moviess.innerHTML = `
+                    <img src="${IMGPATH + poster_path}" alt="${title}">
+                    <div class="movie-info">
+                        <h3>${title}</h3>
+                        <span class=${getClassByRate({ vote_average })}>${vote_average}</span>
+                    </div>
+                    <div class="overview">
+                        <h3>overview</h3>
+                        <p>${overview}</p>
+                    </div>
+                `;
+                content.appendChild(moviess);
+            });
+        }
+
+        function getClassByRate(vote) {
+            if (vote > 8) {
+                return "green";
+            } else if (vote >= 5) {
+                return "orange";
+            } else {
+                return "red";
+            }
+        }
+
+        search.addEventListener("keyup", function (e) {
+            if (e.target.value !== "") {
+                getmovie(SEARCHAPI + e.target.value);
+            } else {
+                getmovie(APIURL);
+            }
+        });
+
+        getmovie(APIURL);
+    </script>
+</body>
+
+</html>
